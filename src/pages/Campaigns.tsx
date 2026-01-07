@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { useCampaigns } from '@/hooks/useCampaigns';
 import { useWorkspace } from '@/contexts/WorkspaceContext';
+import { LEAD_STAGES, type LeadStage } from '@/types/database';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { Plus, Loader2, Megaphone } from 'lucide-react';
@@ -17,20 +19,23 @@ export default function Campaigns() {
   const { toast } = useToast();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [formData, setFormData] = useState({ name: '', offer_context: '', ai_prompt: '' });
+  const [formData, setFormData] = useState({ name: '', offer_context: '', ai_prompt: '', trigger_stage: '' as LeadStage | '' });
 
   const isAdmin = currentRole === 'admin';
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
-    const { error } = await createCampaign(formData);
+    const { error } = await createCampaign({
+      ...formData,
+      trigger_stage: formData.trigger_stage || null,
+    });
     if (error) {
       toast({ variant: 'destructive', title: 'Erro', description: error.message });
     } else {
       toast({ title: 'Campanha criada!' });
       setDialogOpen(false);
-      setFormData({ name: '', offer_context: '', ai_prompt: '' });
+      setFormData({ name: '', offer_context: '', ai_prompt: '', trigger_stage: '' });
     }
     setSaving(false);
   };
@@ -74,6 +79,21 @@ export default function Campaigns() {
                   <Label>Prompt da IA (Persona/Estilo)</Label>
                   <Textarea value={formData.ai_prompt} onChange={e => setFormData(p => ({ ...p, ai_prompt: e.target.value }))} rows={3} />
                 </div>
+                <div className="space-y-2">
+                  <Label>Etapa Gatilho (opcional)</Label>
+                  <Select value={formData.trigger_stage} onValueChange={v => setFormData(p => ({ ...p, trigger_stage: v as LeadStage }))}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione uma etapa" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">Nenhuma</SelectItem>
+                      {LEAD_STAGES.map(s => (
+                        <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground">Ao mover um lead para esta etapa, uma mensagem será gerada automaticamente.</p>
+                </div>
                 <Button type="submit" className="w-full" disabled={saving}>
                   {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Criar
                 </Button>
@@ -97,9 +117,14 @@ export default function Campaigns() {
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground line-clamp-3">{campaign.offer_context || 'Sem contexto definido'}</p>
-              <p className="text-xs text-muted-foreground mt-2">
-                {campaign.is_active ? '🟢 Ativa' : '⚪ Inativa'}
-              </p>
+              <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
+                <span>{campaign.is_active ? '🟢 Ativa' : '⚪ Inativa'}</span>
+                {campaign.trigger_stage && (
+                  <span className="bg-primary/10 text-primary px-2 py-0.5 rounded">
+                    Gatilho: {LEAD_STAGES.find(s => s.value === campaign.trigger_stage)?.label}
+                  </span>
+                )}
+              </div>
             </CardContent>
           </Card>
         ))}

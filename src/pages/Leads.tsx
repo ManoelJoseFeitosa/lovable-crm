@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { DndContext, DragEndEvent, DragOverlay, DragStartEvent, closestCorners, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { useLeads } from '@/hooks/useLeads';
+import { useCampaigns } from '@/hooks/useCampaigns';
+import { useAIMessages } from '@/hooks/useAIMessages';
 import { LEAD_STAGES, type Lead, type LeadStage } from '@/types/database';
 import { KanbanColumn } from '@/components/leads/KanbanColumn';
 import { LeadCard } from '@/components/leads/LeadCard';
@@ -10,7 +12,9 @@ import { Plus, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 export default function Leads() {
-  const { leads, loading, updateLeadStage, createLead } = useLeads();
+  const { leads, loading, updateLeadStage, createLead, fetchLeads } = useLeads();
+  const { campaigns } = useCampaigns();
+  const { generateMessage } = useAIMessages();
   const { toast } = useToast();
   const [activeLead, setActiveLead] = useState<Lead | null>(null);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
@@ -39,12 +43,39 @@ export default function Leads() {
     const lead = leads.find(l => l.id === leadId);
     if (!lead || lead.stage === newStage) return;
 
+    // Regra 1: Trava para 'lead_mapeado' - requer empresa e cargo
+    if (newStage === 'lead_mapeado') {
+      if (!lead.company?.trim() || !lead.job_title?.trim()) {
+        toast({
+          variant: 'destructive',
+          title: 'Dados incompletos',
+          description: 'Para mover para "Lead Mapeado", preencha Empresa e Cargo do lead.',
+        });
+        return;
+      }
+    }
+
     const { error } = await updateLeadStage(leadId, newStage);
     if (error) {
       toast({
         variant: 'destructive',
         title: 'Erro ao mover lead',
         description: error.message,
+      });
+      return;
+    }
+
+    // Regra 2: Gatilho de IA - verifica campanhas com trigger_stage
+    const triggerCampaigns = campaigns.filter(
+      c => c.is_active && c.trigger_stage === newStage
+    );
+
+    for (const campaign of triggerCampaigns) {
+      const updatedLead = leads.find(l => l.id === leadId) || lead;
+      await generateMessage(updatedLead, campaign);
+      toast({
+        title: 'Mensagem IA gerada',
+        description: `Campanha "${campaign.name}" disparou uma mensagem automática.`,
       });
     }
   };

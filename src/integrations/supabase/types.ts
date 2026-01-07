@@ -78,6 +78,7 @@ export type Database = {
           is_active: boolean
           name: string
           offer_context: string | null
+          trigger_stage: Database["public"]["Enums"]["lead_stage"] | null
           updated_at: string
           workspace_id: string
         }
@@ -89,6 +90,7 @@ export type Database = {
           is_active?: boolean
           name: string
           offer_context?: string | null
+          trigger_stage?: Database["public"]["Enums"]["lead_stage"] | null
           updated_at?: string
           workspace_id: string
         }
@@ -100,6 +102,7 @@ export type Database = {
           is_active?: boolean
           name?: string
           offer_context?: string | null
+          trigger_stage?: Database["public"]["Enums"]["lead_stage"] | null
           updated_at?: string
           workspace_id?: string
         }

@@ -45,6 +45,7 @@ export interface Campaign {
   name: string;
   offer_context: string | null;
   ai_prompt: string | null;
+  trigger_stage: LeadStage | null;
   is_active: boolean;
   created_by: string | null;
   created_at: string;

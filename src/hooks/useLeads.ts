@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/integrations/supabase/externalClient';
 import { useWorkspace } from '@/contexts/WorkspaceContext';
+import { useAuth } from '@/contexts/AuthContext';
 import type { Lead, LeadStage } from '@/types/database';
 import { useToast } from '@/hooks/use-toast';
 
 export function useLeads() {
   const { currentWorkspace } = useWorkspace();
+  const { user } = useAuth();
   const { toast } = useToast();
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
@@ -41,7 +43,16 @@ export function useLeads() {
   }, [currentWorkspace?.id]);
 
   const createLead = async (leadData: Partial<Lead>) => {
-    if (!currentWorkspace) return { error: new Error('No workspace selected') };
+    if (!currentWorkspace) {
+      console.error('[useLeads] createLead: No workspace selected');
+      return { error: new Error('No workspace selected') };
+    }
+    if (!user) {
+      console.error('[useLeads] createLead: No authenticated user');
+      return { error: new Error('No authenticated user') };
+    }
+
+    console.log('[useLeads] createLead: workspace_id=', currentWorkspace.id, 'user_id=', user.id);
 
     const { data, error } = await supabase
       .from('leads')
@@ -57,6 +68,7 @@ export function useLeads() {
         campaign_id: leadData.campaign_id,
         stage: leadData.stage || 'base',
         workspace_id: currentWorkspace.id,
+        created_by: user.id,
       })
       .select('*, campaigns(*)')
       .single();

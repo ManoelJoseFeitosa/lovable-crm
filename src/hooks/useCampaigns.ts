@@ -49,6 +49,7 @@ export function useCampaigns() {
         name: campaignData.name || '',
         offer_context: campaignData.offer_context,
         ai_prompt: campaignData.ai_prompt,
+        trigger_stage: campaignData.trigger_stage,
         is_active: campaignData.is_active ?? true,
         workspace_id: currentWorkspace.id,
       })

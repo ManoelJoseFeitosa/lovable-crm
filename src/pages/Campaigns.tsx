@@ -81,12 +81,12 @@ export default function Campaigns() {
                 </div>
                 <div className="space-y-2">
                   <Label>Etapa Gatilho (opcional)</Label>
-                  <Select value={formData.trigger_stage} onValueChange={v => setFormData(p => ({ ...p, trigger_stage: v as LeadStage }))}>
+                  <Select value={formData.trigger_stage || 'none'} onValueChange={v => setFormData(p => ({ ...p, trigger_stage: v === 'none' ? '' : v as LeadStage }))}>
                     <SelectTrigger>
                       <SelectValue placeholder="Selecione uma etapa" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Nenhuma</SelectItem>
+                      <SelectItem value="none">Nenhuma</SelectItem>
                       {LEAD_STAGES.map(s => (
                         <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
                       ))}

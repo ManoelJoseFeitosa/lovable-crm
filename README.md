@@ -1,73 +1,12 @@
-# Welcome to your Lovable project
+CRM SDR - Automação com IA e Gestão Multi-tenant
 
-## Project info
+Este projeto é uma plataforma de CRM especializada para SDRs, focada em produtividade e automação inteligente.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+Stack Técnica e Desafios Superados
+- Arquitetura Multi-tenant:** Implementação de isolamento de dados via **Row Level Security (RLS)** no Supabase, garantindo que cada usuário acesse apenas seus próprios Workspaces e Leads.
+- Integração com Supabase Externo:** Configuração de infraestrutura customizada, saindo do ambiente padrão para uma solução escalável e profissional.
+- Automação de IA:** Desenvolvimento de gatilhos que geram mensagens personalizadas baseadas no contexto do Lead e na etapa do funil (Requisito 4.3).
+- Consistência de Dados:** Implementação de travas de segurança no Kanban para garantir que Leads só avancem se possuírem informações críticas (Empresa e Cargo).
 
-## How can I edit this code?
-
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+Link do Projeto
+Acesse a versão live aqui: [workspace-whisper-89.lovable.app](https://workspace-whisper-89.lovable.app)

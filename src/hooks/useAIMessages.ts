@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/integrations/supabase/externalClient';
 import { useAuth } from '@/contexts/AuthContext';
 import type { AIMessage, Lead, Campaign } from '@/types/database';
 import { useToast } from '@/hooks/use-toast';

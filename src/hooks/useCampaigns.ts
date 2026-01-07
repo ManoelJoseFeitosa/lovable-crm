@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/integrations/supabase/externalClient';
 import { useWorkspace } from '@/contexts/WorkspaceContext';
+import { useAuth } from '@/contexts/AuthContext';
 import type { Campaign } from '@/types/database';
 import { useToast } from '@/hooks/use-toast';
 
 export function useCampaigns() {
   const { currentWorkspace } = useWorkspace();
+  const { user } = useAuth();
   const { toast } = useToast();
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [loading, setLoading] = useState(true);
@@ -41,7 +43,16 @@ export function useCampaigns() {
   }, [currentWorkspace?.id]);
 
   const createCampaign = async (campaignData: Partial<Campaign>) => {
-    if (!currentWorkspace) return { error: new Error('No workspace selected') };
+    if (!currentWorkspace) {
+      console.error('[useCampaigns] createCampaign: No workspace selected');
+      return { error: new Error('No workspace selected') };
+    }
+    if (!user) {
+      console.error('[useCampaigns] createCampaign: No authenticated user');
+      return { error: new Error('No authenticated user') };
+    }
+
+    console.log('[useCampaigns] createCampaign: workspace_id=', currentWorkspace.id, 'user_id=', user.id);
 
     const { data, error } = await supabase
       .from('campaigns')
@@ -52,6 +63,7 @@ export function useCampaigns() {
         trigger_stage: campaignData.trigger_stage,
         is_active: campaignData.is_active ?? true,
         workspace_id: currentWorkspace.id,
+        created_by: user.id,
       })
       .select()
       .single();

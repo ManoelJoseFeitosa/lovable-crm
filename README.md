@@ -10,3 +10,5 @@ Stack Técnica e Desafios Superados
 
 Link do Projeto
 Acesse a versão live aqui: [workspace-whisper-89.lovable.app](https://workspace-whisper-89.lovable.app)
+
+Link do Vídeo: https://youtu.be/mc7tdA6Z7Io
